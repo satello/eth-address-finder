@@ -6,6 +6,7 @@ import (
   "github.com/onrik/ethrpc"
   "sync"
   "log"
+  "time"
 )
 
 func getBlockRequest(blockNumber int, ch chan<-map[string]bool) {
@@ -41,6 +42,7 @@ func getBlockRequest(blockNumber int, ch chan<-map[string]bool) {
 }
 
 func main() {
+  start := time.Now()
   var start_block int
   var end_block int
   all_addresses := make(map[string]bool)
@@ -80,6 +82,7 @@ func main() {
 
       // start a new request once one has finished
       if current_block < end_block {
+        fmt.Println("starting another go routine")
         current_block++
         go getBlockRequest(current_block, address_chan)
       }
@@ -89,9 +92,11 @@ func main() {
 
   // wait until we have received all addresses
   wg.Wait()
-
   // print all addresses NOTE should stdout to a file or you are going to get spammed
-  for address := range all_addresses {
-    fmt.Println(address)
-  }
+  fmt.Println("All done")
+  fmt.Println(len(all_addresses))
+  fmt.Println(time.Since(start))
+  // for address := range all_addresses {
+  //   fmt.Println(address)
+  // }
 }
