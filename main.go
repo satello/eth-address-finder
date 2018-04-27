@@ -57,9 +57,12 @@ func main() {
   var wg sync.WaitGroup
   wg.Add(end_block-start_block + 1)
 
+  // limit number of go routines running at once so we don't go over open file limit
+  current_block := start_block
   // do each rpc call as a concurrent request
-  for block_number := start_block; block_number <= end_block; block_number++ {
-    go getBlockRequest(block_number, address_chan)
+  for i := 0; i <= 500; i++ {
+    current_block++
+    go getBlockRequest(current_block, address_chan)
   }
 
   go func() {
@@ -68,6 +71,12 @@ func main() {
       for address := range address_map {
         // add address to mapping
         all_addresses[address] = true
+      }
+
+      // start a new request once one has finished
+      if current_block < end_block {
+        current_block++
+        go getBlockRequest(current_block, address_chan)
       }
       wg.Done()
     }
