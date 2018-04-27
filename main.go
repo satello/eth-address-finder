@@ -61,8 +61,9 @@ func main() {
   // limit number of go routines running at once so we don't go over open file limit
   current_block := start_block
   batch_size := 500
-  if block_range_size < batch_size:
+  if block_range_size < batch_size {
     batch_size = block_range_size
+  }
   // do each rpc call as a concurrent request
   for i := 0; i <= batch_size; i++ {
     current_block++
