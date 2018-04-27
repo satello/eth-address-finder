@@ -10,7 +10,7 @@ import (
 
 func getBlockRequest(blockNumber int, ch chan<-map[string]bool) {
   // TODO consider using same client for each request
-  fmt.Print(blockNumber)
+  fmt.Println(blockNumber)
   client := ethrpc.New("http://127.0.0.1:8545")
 
   _, err := client.Web3ClientVersion()
@@ -56,6 +56,7 @@ func main() {
   address_chan := make(chan map[string]bool)
   // this will allow our program to stay alive until all requests are completed
   var wg sync.WaitGroup
+  fmt.Println(end_block-start_block)
   wg.Add(end_block-start_block)
 
   // do each rpc call as a concurrent request
@@ -65,7 +66,7 @@ func main() {
 
   go func() {
     for address_map := range address_chan {
-      fmt.Print("received addresses")
+      fmt.Println(len(address_map))
       // mark a response as received when we add to our master mapping of addresses
       defer wg.Done()
       for address := range address_map {
