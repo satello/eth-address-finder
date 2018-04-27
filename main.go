@@ -74,7 +74,6 @@ func main() {
 
   go func() {
     for address_map := range address_chan {
-      fmt.Println(current_block)
       // mark a response as received when we add to our master mapping of addresses
       for address := range address_map {
         // add address to mapping
@@ -82,7 +81,7 @@ func main() {
       }
 
       // start a new request once one has finished
-      if current_block < end_block {
+      if current_block <= end_block {
         fmt.Println("starting another go routine")
         current_block++
         go getBlockRequest(current_block, address_chan)
