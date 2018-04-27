@@ -55,7 +55,8 @@ func main() {
   address_chan := make(chan map[string]bool)
   // this will allow our program to stay alive until all requests are completed
   var wg sync.WaitGroup
-  wg.Add(end_block-start_block + 1)
+  fmt.Println((end_block-start_block) + 1)
+  wg.Add((end_block-start_block) + 1)
 
   // limit number of go routines running at once so we don't go over open file limit
   current_block := start_block
