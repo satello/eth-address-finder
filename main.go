@@ -95,7 +95,9 @@ func main() {
   fmt.Println("All done")
   fmt.Println(len(all_addresses))
   fmt.Println(time.Since(start))
-  // for address := range all_addresses {
-  //   fmt.Println(address)
-  // }
+  fmt.Println()
+  
+  for address := range all_addresses {
+    fmt.Println(address)
+  }
 }
