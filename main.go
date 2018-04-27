@@ -55,13 +55,16 @@ func main() {
   address_chan := make(chan map[string]bool)
   // this will allow our program to stay alive until all requests are completed
   var wg sync.WaitGroup
-  fmt.Println((end_block-start_block) + 1)
-  wg.Add((end_block-start_block) + 1)
+  block_range_size := end_block-start_block
+  wg.Add(block_range_size + 1)
 
   // limit number of go routines running at once so we don't go over open file limit
   current_block := start_block
+  batch_size := 500
+  if block_range_size < batch_size:
+    batch_size = block_range_size
   // do each rpc call as a concurrent request
-  for i := 0; i <= 500; i++ {
+  for i := 0; i <= batch_size; i++ {
     current_block++
     go getBlockRequest(current_block, address_chan)
   }
