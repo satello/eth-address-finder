@@ -82,7 +82,6 @@ func main() {
 
       // start a new request once one has finished
       if current_block <= end_block {
-        fmt.Println("starting another go routine")
         current_block++
         go getBlockRequest(current_block, address_chan)
       }
