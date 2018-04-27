@@ -57,7 +57,7 @@ func main() {
   // this will allow our program to stay alive until all requests are completed
   var wg sync.WaitGroup
   fmt.Println(end_block-start_block)
-  wg.Add(end_block-start_block)
+  wg.Add(end_block-start_block + 1)
 
   // do each rpc call as a concurrent request
   for block_number := start_block; block_number <= end_block; block_number++ {
@@ -68,11 +68,11 @@ func main() {
     for address_map := range address_chan {
       fmt.Println(len(address_map))
       // mark a response as received when we add to our master mapping of addresses
-      defer wg.Done()
       for address := range address_map {
         // add address to mapping
         all_addresses[address] = true
       }
+      wg.Done()
     }
   }()
 
