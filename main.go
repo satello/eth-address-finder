@@ -24,7 +24,7 @@ func getBlockRequest(blockNumber int, ch chan<-map[string]bool) {
       log.Fatal(err)
   }
 
-  addresses =  make(map[string]bool)
+  addresses := make(map[string]bool)
   for _, element := range block.Transactions {
     sender := element.From
     receiver := element.To
@@ -43,7 +43,7 @@ func getBlockRequest(blockNumber int, ch chan<-map[string]bool) {
 func main() {
   var start_block int
   var end_block int
-  all_addresses  = make(map[string]bool)
+  all_addresses := make(map[string]bool)
   // command line args
   startPtr := flag.Int("start", 0, "start block")
   endPtr := flag.Int("end", 0, "end block")
