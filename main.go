@@ -74,6 +74,7 @@ func main() {
 
   go func() {
     for address_map := range address_chan {
+      fmt.Println(current_block)
       // mark a response as received when we add to our master mapping of addresses
       for address := range address_map {
         // add address to mapping
