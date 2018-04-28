@@ -9,15 +9,7 @@ import (
   "time"
 )
 
-func getBlockRequest(blockNumber int, ch chan<-map[string]bool) {
-  // TODO consider using same client for each request
-  client := ethrpc.New("http://127.0.0.1:8545")
-
-  _, err := client.Web3ClientVersion()
-  if err != nil {
-      log.Fatal(err)
-  }
-
+func getBlockRequest(blockNumber int, ch chan<-bool, client *ethrpc.EthRPC) {
   // fetch block with transactions
   block, err := client.EthGetBlockByNumber(blockNumber, true)
 
@@ -25,20 +17,19 @@ func getBlockRequest(blockNumber int, ch chan<-map[string]bool) {
       log.Fatal(err)
   }
 
-  addresses := make(map[string]bool)
   for _, element := range block.Transactions {
     sender := element.From
     receiver := element.To
 
     if sender != "" {
-      addresses[sender] = true
+      fmt.Println(sender)
     }
     if receiver != "" {
-      addresses[receiver] = true
+      fmt.Println(receiver)
     }
   }
 
-  ch <- addresses
+  ch <- true
 }
 
 func main() {
@@ -54,7 +45,14 @@ func main() {
   start_block = *startPtr
   end_block = *endPtr
 
-  address_chan := make(chan map[string]bool)
+  client := ethrpc.New("http://127.0.0.1:8545")
+
+  _, err := client.Web3ClientVersion()
+  if err != nil {
+      log.Fatal(err)
+  }
+
+  block_done_chan := make(chan bool)
   // this will allow our program to stay alive until all requests are completed
   var wg sync.WaitGroup
   block_range_size := end_block-start_block
@@ -69,34 +67,29 @@ func main() {
   // do each rpc call as a concurrent request
   for i := 0; i <= batch_size; i++ {
     current_block++
-    go getBlockRequest(current_block, address_chan)
+    go getBlockRequest(current_block, block_done_chan, client)
   }
 
   go func() {
-    for address_map := range address_chan {
-      // mark a response as received when we add to our master mapping of addresses
-      for address := range address_map {
-        // add address to mapping
-        all_addresses[address] = true
-      }
-
+    for success := range block_done_chan {
       // start a new request once one has finished
-      if current_block <= end_block {
-        current_block++
-        go getBlockRequest(current_block, address_chan)
+      if success {
+        if current_block <= end_block {
+          current_block++
+          go getBlockRequest(current_block, block_done_chan, client)
+        }
+        wg.Done()
       }
-      wg.Done()
     }
   }()
 
   // wait until we have received all addresses
   wg.Wait()
   // print all addresses NOTE should stdout to a file or you are going to get spammed
-  fmt.Println("All done")
-  fmt.Println(len(all_addresses))
-  fmt.Println(time.Since(start))
   fmt.Println()
-  
+  fmt.Println("All done")
+  fmt.Println(time.Since(start))
+
   for address := range all_addresses {
     fmt.Println(address)
   }
