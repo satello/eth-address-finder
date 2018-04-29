@@ -11,6 +11,4 @@ if __name__ == '__main__':
                 break
             if not seen_addresses.get(line):
                 seen_addresses[line] = True
-
-    for address in seen_addresses.keys():
-        print(address)
+                print(line)
