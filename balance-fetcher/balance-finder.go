@@ -22,6 +22,10 @@ func getBalanceRequest(
   client *ethrpc.EthRPC,
   ch chan<-bool,
 ) {
+  if len(address) < 40 {
+    ch <- true
+    return
+  }
   // fetch balance at block height
   balance, err := client.EthGetBalance(address, block_number_hex)
   if err != nil {
@@ -37,10 +41,10 @@ func main() {
   start := time.Now()
   // File handling
   file_size := 28049940
-  // file_size := 2
-  block_hex := "0x53c03a"
+  // file_size := 10
+  block_hex := "0x545a65"
 
-  file, err := os.Open("./filtered_addresses.txt")
+  file, err := os.Open("./filtered_addresses_short.txt")
   if err != nil {
     log.Fatal(err)
   }
@@ -52,8 +56,8 @@ func main() {
       log.Fatal(err)
   }
 
-  // client := ethrpc.New("http://127.0.0.1:8545")
-  client := ethrpc.New("https://mainnet.infura.io")
+  client := ethrpc.New("http://127.0.0.1:8545")
+  // client := ethrpc.New("https://mainnet.infura.io")
 
   _, err = client.Web3ClientVersion()
   if err != nil {
@@ -68,7 +72,7 @@ func main() {
   wg.Add(file_size)
 
   // limit number of go routines running at once so we don't go over open file limit
-  batch_size := 500
+  batch_size := 300
   if file_size < batch_size {
     batch_size = file_size
   }
