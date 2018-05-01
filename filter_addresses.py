@@ -1,8 +1,10 @@
+import sys
+
 if __name__ == '__main__':
     seen_addresses = {}
 
     # strip out duplicates
-    with open('./result.csv') as f:
+    with open(sys.argv[1]) as f:
         for line in f:
             line = line.strip()
             if line == '':
