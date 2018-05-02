@@ -1,19 +1,22 @@
 import sys
 
 if __name__ == '__main__':
-    new_addresses_map = {}
+    seen_addresses = {}
     new_addresses = []
 
     extra_address_file = sys.argv[1]
     # add all of our new addresses (smaller than current address set)
-    with open(extra_address_file.csv) as f:
+    with open(extra_address_file) as f:
         for line in f:
             line = line.strip()
             if line == '':
                 break
             if not seen_addresses.get(line):
-                new_addresses_map[line] = True
-                new_addresses.push(line)
+                try:
+                    seen_addresses[line] = True
+                except:
+                    raise RuntimeError('%s made a memory boo boo' % line)
+                new_addresses.append(line)
 
     filtered_file = sys.argv[2]
     with open(filtered_file) as f:

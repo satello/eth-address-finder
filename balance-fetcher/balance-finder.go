@@ -40,11 +40,11 @@ func getBalanceRequest(
 func main() {
   start := time.Now()
   // File handling
-  file_size := 28049940
+  file_size := 28599337
   // file_size := 10
-  block_hex := "0x545a65"
+  block_hex := "0x54898b"
 
-  file, err := os.Open("./filtered_addresses_short.txt")
+  file, err := os.Open("./final_filtered_set.txt")
   if err != nil {
     log.Fatal(err)
   }
@@ -72,7 +72,7 @@ func main() {
   wg.Add(file_size)
 
   // limit number of go routines running at once so we don't go over open file limit
-  batch_size := 300
+  batch_size := 500
   if file_size < batch_size {
     batch_size = file_size
   }
